@@ -2,6 +2,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -10,17 +17,19 @@ public class Chiron {
     private static final String LINE =
             "____________________________________________________________";
 
-    private static final String MSG_GREETING_1 = "Hello! I'm Chiron!";
-    private static final String MSG_GREETING_2 = "Wise enough to guide, young enough to call you out.";
-    private static final String MSG_GREETING_3 = "What can I do for you?";
+    // ===== Personality =====
+    private static final String MSG_GREETING_1 = "Chiron: I’m here.";
+    private static final String MSG_GREETING_2 = "Wise enough to guide. Young enough to grow with you.";
+    private static final String MSG_GREETING_3 = "Tell me — what are we working on today?";
 
-    private static final String MSG_BYE = "Chiron: Farewell. Train well—come back sharper.";
+    private static final String MSG_BYE =
+            "Chiron: Rest well. Progress favors the consistent — not the rushed.";
 
     private static final String HELP =
             "Try:\n"
                     + "  todo <desc>\n"
-                    + "  deadline <desc> /by <time>\n"
-                    + "  event <desc> /from <start> /to <end>\n"
+                    + "  deadline <desc> /by <yyyy-mm-dd> [HHmm]\n"
+                    + "  event <desc> /from <yyyy-mm-dd> [HHmm] /to <yyyy-mm-dd> [HHmm]\n"
                     + "  list\n"
                     + "  mark <n>\n"
                     + "  unmark <n>\n"
@@ -30,6 +39,19 @@ public class Chiron {
     // ===== Level-7 storage paths =====
     private static final String DATA_DIR = "./data";
     private static final String DATA_PATH = "./data/chiron.txt";
+
+    // ===== Level-8 date formats =====
+    // Accept:
+    //   yyyy-MM-dd
+    //   yyyy-MM-dd HHmm   (e.g. 2026-02-06 2359)
+    private static final DateTimeFormatter INPUT_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter INPUT_DATE_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+
+    // Display:
+    //   MMM dd yyyy
+    //   MMM dd yyyy HHmm
+    private static final DateTimeFormatter OUTPUT_DATE = DateTimeFormatter.ofPattern("MMM dd yyyy");
+    private static final DateTimeFormatter OUTPUT_DATE_TIME = DateTimeFormatter.ofPattern("MMM dd yyyy HHmm");
 
     private static final ArrayList<Task> tasks = new ArrayList<>();
 
@@ -133,7 +155,7 @@ public class Chiron {
                 yield true;
             }
             case UNKNOWN -> {
-                printError("I don't know that command yet.", HELP);
+                printError("That path doesn’t make sense yet.", HELP);
                 yield true;
             }
         };
@@ -173,7 +195,7 @@ public class Chiron {
     private static void printTaskList() {
         printLine();
         if (tasks.isEmpty()) {
-            System.out.println("Chiron: Nothing on your list. Either you're free... or avoiding reality.");
+            System.out.println("Chiron: Your list is empty. Either you’re prepared — or you haven’t begun.");
         } else {
             System.out.println("Chiron: Here’s what you owe yourself:");
             for (int i = 0; i < tasks.size(); i++) {
@@ -186,7 +208,7 @@ public class Chiron {
     private static void addTodo(String desc) {
         String cleaned = desc.trim();
         if (cleaned.isEmpty()) {
-            printError("A todo with no description? Brave.", "Try: todo read CS2103T spec");
+            printError("A todo with no description? Bold. Not helpful.", "Try: todo read CS2103T spec");
             return;
         }
 
@@ -195,7 +217,7 @@ public class Chiron {
         saveTasks(); // Level-7: save after modification
 
         printLine();
-        System.out.println("Chiron: Added. Don’t abandon it.");
+        System.out.println("Chiron: Noted. Small steps still move you forward.");
         System.out.println("  " + tasks.size() + ". " + task);
         System.out.println("Now you have " + tasks.size() + " task(s).");
         printLine();
@@ -204,34 +226,41 @@ public class Chiron {
     private static void addDeadline(String rest) {
         String cleaned = rest.trim();
         if (cleaned.isEmpty()) {
-            printError("A deadline needs details.", "Try: deadline submit iP /by tonight");
+            printError("A deadline needs details.", "Try: deadline submit iP /by 2026-02-05");
             return;
         }
 
         int byPos = cleaned.indexOf("/by");
         if (byPos == -1) {
-            printError("Deadlines need a /by.", "Try: deadline submit iP /by tonight");
+            printError("Deadlines need a /by. Precision matters here.", "Try: deadline submit iP /by 2026-02-05");
             return;
         }
 
         String desc = cleaned.substring(0, byPos).trim();
-        String by = cleaned.substring(byPos + 3).trim();
+        String byRaw = cleaned.substring(byPos + 3).trim();
 
         if (desc.isEmpty()) {
-            printError("Deadline description is missing.", "Try: deadline submit iP /by tonight");
+            printError("Deadline description is missing.", "Try: deadline submit iP /by 2026-02-05");
             return;
         }
-        if (by.isEmpty()) {
-            printError("Deadline time is missing.", "Try: deadline submit iP /by tonight");
+        if (byRaw.isEmpty()) {
+            printError("Deadline date/time is missing.", "Try: deadline submit iP /by 2026-02-05");
             return;
         }
 
-        Task task = new Deadline(desc, by);
+        ParsedDateTime parsedBy = parseDateTime(byRaw);
+        if (parsedBy == null) {
+            printError("I can only read dates as yyyy-mm-dd (optional time: HHmm).",
+                    "Examples:\n  deadline submit iP /by 2026-02-05\n  deadline submit iP /by 2026-02-05 2359");
+            return;
+        }
+
+        Task task = new Deadline(desc, parsedBy.value, parsedBy.hasTime);
         tasks.add(task);
-        saveTasks(); // Level-7
+        saveTasks();
 
         printLine();
-        System.out.println("Chiron: Deadline set. Don’t negotiate with time.");
+        System.out.println("Chiron: A deadline sharpens focus. Respect it.");
         System.out.println("  " + tasks.size() + ". " + task);
         System.out.println("Now you have " + tasks.size() + " task(s).");
         printLine();
@@ -240,7 +269,7 @@ public class Chiron {
     private static void addEvent(String rest) {
         String cleaned = rest.trim();
         if (cleaned.isEmpty()) {
-            printError("An event needs details.", "Try: event meeting /from 2pm /to 4pm");
+            printError("An event needs details.", "Try: event meeting /from 2026-02-10 /to 2026-02-10");
             return;
         }
 
@@ -248,33 +277,43 @@ public class Chiron {
         int toPos = cleaned.indexOf("/to");
 
         if (fromPos == -1 || toPos == -1 || toPos < fromPos) {
-            printError("Events need both /from and /to.", "Try: event meeting /from 2pm /to 4pm");
+            printError("Events need both /from and /to.", "Try: event meeting /from 2026-02-10 /to 2026-02-10");
             return;
         }
 
         String desc = cleaned.substring(0, fromPos).trim();
-        String from = cleaned.substring(fromPos + 5, toPos).trim();
-        String to = cleaned.substring(toPos + 3).trim();
+        String fromRaw = cleaned.substring(fromPos + 5, toPos).trim();
+        String toRaw = cleaned.substring(toPos + 3).trim();
 
         if (desc.isEmpty()) {
-            printError("Event description is missing.", "Try: event meeting /from 2pm /to 4pm");
+            printError("Event description is missing.", "Try: event meeting /from 2026-02-10 /to 2026-02-10");
             return;
         }
-        if (from.isEmpty()) {
-            printError("Event start time is missing.", "Try: event meeting /from 2pm /to 4pm");
+        if (fromRaw.isEmpty()) {
+            printError("Event start date/time is missing.", "Try: event meeting /from 2026-02-10 /to 2026-02-10");
             return;
         }
-        if (to.isEmpty()) {
-            printError("Event end time is missing.", "Try: event meeting /from 2pm /to 4pm");
+        if (toRaw.isEmpty()) {
+            printError("Event end date/time is missing.", "Try: event meeting /from 2026-02-10 /to 2026-02-10");
             return;
         }
 
-        Task task = new Event(desc, from, to);
+        ParsedDateTime parsedFrom = parseDateTime(fromRaw);
+        ParsedDateTime parsedTo = parseDateTime(toRaw);
+
+        if (parsedFrom == null || parsedTo == null) {
+            printError("I can only read dates as yyyy-mm-dd (optional time: HHmm).",
+                    "Examples:\n  event meeting /from 2026-02-10 /to 2026-02-12\n"
+                            + "  event meeting /from 2026-02-10 1400 /to 2026-02-10 1600");
+            return;
+        }
+
+        Task task = new Event(desc, parsedFrom.value, parsedFrom.hasTime, parsedTo.value, parsedTo.hasTime);
         tasks.add(task);
-        saveTasks(); // Level-7
+        saveTasks();
 
         printLine();
-        System.out.println("Chiron: Event logged. Show up.");
+        System.out.println("Chiron: Logged. Be present when the time comes.");
         System.out.println("  " + tasks.size() + ". " + task);
         System.out.println("Now you have " + tasks.size() + " task(s).");
         printLine();
@@ -294,13 +333,13 @@ public class Chiron {
 
         Task task = tasks.get(idx - 1);
         task.setDone(isDone);
-        saveTasks(); // Level-7
+        saveTasks();
 
         printLine();
         if (isDone) {
-            System.out.println("Chiron: Good. Discipline looks good on you.");
+            System.out.println("Chiron: Well done. Momentum is built like this.");
         } else {
-            System.out.println("Chiron: Back to unfinished business.");
+            System.out.println("Chiron: Then it isn’t finished yet. That’s alright.");
         }
         System.out.println("  " + idx + ". " + task);
         printLine();
@@ -319,10 +358,10 @@ public class Chiron {
         }
 
         Task removed = tasks.remove(idx - 1);
-        saveTasks(); // Level-7
+        saveTasks();
 
         printLine();
-        System.out.println("Chiron: Deleted. One less weight on your mind.");
+        System.out.println("Chiron: Letting go can be a form of clarity.");
         System.out.println("  " + removed);
         System.out.println("Now you have " + tasks.size() + " task(s).");
         printLine();
@@ -340,13 +379,59 @@ public class Chiron {
         }
     }
 
+    // ===== Level-8 Date/Time parsing =====
+
+    private static class ParsedDateTime {
+        private final LocalDateTime value;
+        private final boolean hasTime;
+
+        ParsedDateTime(LocalDateTime value, boolean hasTime) {
+            this.value = value;
+            this.hasTime = hasTime;
+        }
+    }
+
+    private static ParsedDateTime parseDateTime(String raw) {
+        String s = raw.trim();
+        if (s.isEmpty()) {
+            return null;
+        }
+
+        // date + time (contains a space)
+        if (s.contains(" ")) {
+            try {
+                LocalDateTime dt = LocalDateTime.parse(s, INPUT_DATE_TIME);
+                return new ParsedDateTime(dt, true);
+            } catch (DateTimeParseException ignored) {
+                return null;
+            }
+        }
+
+        // date-only
+        try {
+            LocalDate d = LocalDate.parse(s, INPUT_DATE);
+            return new ParsedDateTime(LocalDateTime.of(d, LocalTime.MIDNIGHT), false);
+        } catch (DateTimeParseException ignored) {
+            return null;
+        }
+    }
+
+    private static String formatDateTime(LocalDateTime dt, boolean hasTime) {
+        return hasTime ? dt.format(OUTPUT_DATE_TIME) : dt.toLocalDate().format(OUTPUT_DATE);
+    }
+
+    private static String storeDateTime(LocalDateTime dt, boolean hasTime) {
+        // store back in an input-compatible format
+        return hasTime ? dt.format(INPUT_DATE_TIME) : dt.toLocalDate().format(INPUT_DATE);
+    }
+
     // ===== Level-7 Storage =====
 
     private static void saveTasks() {
         try {
             File dir = new File(DATA_DIR);
             if (!dir.exists()) {
-                dir.mkdir(); // creates ./data if missing
+                dir.mkdir();
             }
 
             try (FileWriter fw = new FileWriter(DATA_PATH)) {
@@ -355,8 +440,7 @@ public class Chiron {
                 }
             }
         } catch (IOException e) {
-            // Non-fatal: app still runs even if saving fails
-            printError("Could not save tasks to disk.", null);
+            printError("I couldn’t write your tasks to disk. We’ll keep going — but fix this soon.", null);
         }
     }
 
@@ -364,7 +448,7 @@ public class Chiron {
         File file = new File(DATA_PATH);
 
         if (!file.exists()) {
-            // first run: nothing to load
+            // First run: nothing to load
             return;
         }
 
@@ -380,15 +464,15 @@ public class Chiron {
                 }
             }
         } catch (FileNotFoundException e) {
-            // Shouldn't happen if exists() is true, but keep safe
+            // Ignore: start empty
         }
     }
 
     private static Task parseSavedTask(String line) {
         // Format:
         // T | 1 | description
-        // D | 0 | description | by
-        // E | 0 | description | from | to
+        // D | 0 | description | yyyy-MM-dd [HHmm]
+        // E | 0 | description | yyyy-MM-dd [HHmm] | yyyy-MM-dd [HHmm]
         String[] parts = line.split("\\s*\\|\\s*");
         if (parts.length < 3) {
             return null; // ignore corrupted line
@@ -406,11 +490,16 @@ public class Chiron {
                 break;
             case "D":
                 if (parts.length < 4) return null;
-                t = new Deadline(desc, parts[3].trim());
+                ParsedDateTime byParsed = parseDateTime(parts[3].trim());
+                if (byParsed == null) return null; // old invalid line: skip
+                t = new Deadline(desc, byParsed.value, byParsed.hasTime);
                 break;
             case "E":
                 if (parts.length < 5) return null;
-                t = new Event(desc, parts[3].trim(), parts[4].trim());
+                ParsedDateTime fromParsed = parseDateTime(parts[3].trim());
+                ParsedDateTime toParsed = parseDateTime(parts[4].trim());
+                if (fromParsed == null || toParsed == null) return null; // old invalid line: skip
+                t = new Event(desc, fromParsed.value, fromParsed.hasTime, toParsed.value, toParsed.hasTime);
                 break;
             default:
                 return null;
@@ -474,11 +563,13 @@ public class Chiron {
     }
 
     private static class Deadline extends Task {
-        private final String by;
+        private final LocalDateTime by;
+        private final boolean byHasTime;
 
-        Deadline(String description, String by) {
+        Deadline(String description, LocalDateTime by, boolean byHasTime) {
             super(description);
             this.by = by;
+            this.byHasTime = byHasTime;
         }
 
         @Override
@@ -488,23 +579,28 @@ public class Chiron {
 
         @Override
         public String toString() {
-            return super.toString() + " (by: " + by + ")";
+            return super.toString() + " (by: " + formatDateTime(by, byHasTime) + ")";
         }
 
         @Override
         String toSaveString() {
-            return "D | " + doneFlag() + " | " + descriptionForSave() + " | " + by;
+            return "D | " + doneFlag() + " | " + descriptionForSave() + " | " + storeDateTime(by, byHasTime);
         }
     }
 
     private static class Event extends Task {
-        private final String from;
-        private final String to;
+        private final LocalDateTime from;
+        private final boolean fromHasTime;
+        private final LocalDateTime to;
+        private final boolean toHasTime;
 
-        Event(String description, String from, String to) {
+        Event(String description, LocalDateTime from, boolean fromHasTime,
+              LocalDateTime to, boolean toHasTime) {
             super(description);
             this.from = from;
+            this.fromHasTime = fromHasTime;
             this.to = to;
+            this.toHasTime = toHasTime;
         }
 
         @Override
@@ -514,12 +610,16 @@ public class Chiron {
 
         @Override
         public String toString() {
-            return super.toString() + " (from: " + from + " to: " + to + ")";
+            return super.toString()
+                    + " (from: " + formatDateTime(from, fromHasTime)
+                    + " to: " + formatDateTime(to, toHasTime) + ")";
         }
 
         @Override
         String toSaveString() {
-            return "E | " + doneFlag() + " | " + descriptionForSave() + " | " + from + " | " + to;
+            return "E | " + doneFlag() + " | " + descriptionForSave()
+                    + " | " + storeDateTime(from, fromHasTime)
+                    + " | " + storeDateTime(to, toHasTime);
         }
     }
 }
