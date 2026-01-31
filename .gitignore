@@ -13,5 +13,9 @@ src/main/resources/docs/
 *.iml
 bin/
 
+# Runtime data (Level-7)
+data/
+
+# Text UI test files
 /text-ui-test/ACTUAL.TXT
 text-ui-test/EXPECTED-UNIX.TXT

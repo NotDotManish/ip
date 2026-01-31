@@ -1,3 +1,7 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -22,6 +26,10 @@ public class Chiron {
                     + "  unmark <n>\n"
                     + "  delete <n>\n"
                     + "  bye";
+
+    // ===== Level-7 storage paths =====
+    private static final String DATA_DIR = "./data";
+    private static final String DATA_PATH = "./data/chiron.txt";
 
     private static final ArrayList<Task> tasks = new ArrayList<>();
 
@@ -64,6 +72,7 @@ public class Chiron {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
+        loadTasks(); // Level-7: load saved tasks on startup
         printGreeting();
 
         boolean isRunning = true;
@@ -183,6 +192,7 @@ public class Chiron {
 
         Task task = new Todo(cleaned);
         tasks.add(task);
+        saveTasks(); // Level-7: save after modification
 
         printLine();
         System.out.println("Chiron: Added. Don’t abandon it.");
@@ -218,6 +228,7 @@ public class Chiron {
 
         Task task = new Deadline(desc, by);
         tasks.add(task);
+        saveTasks(); // Level-7
 
         printLine();
         System.out.println("Chiron: Deadline set. Don’t negotiate with time.");
@@ -260,6 +271,7 @@ public class Chiron {
 
         Task task = new Event(desc, from, to);
         tasks.add(task);
+        saveTasks(); // Level-7
 
         printLine();
         System.out.println("Chiron: Event logged. Show up.");
@@ -282,6 +294,7 @@ public class Chiron {
 
         Task task = tasks.get(idx - 1);
         task.setDone(isDone);
+        saveTasks(); // Level-7
 
         printLine();
         if (isDone) {
@@ -306,6 +319,7 @@ public class Chiron {
         }
 
         Task removed = tasks.remove(idx - 1);
+        saveTasks(); // Level-7
 
         printLine();
         System.out.println("Chiron: Deleted. One less weight on your mind.");
@@ -324,6 +338,86 @@ public class Chiron {
         } catch (NumberFormatException e) {
             return -1;
         }
+    }
+
+    // ===== Level-7 Storage =====
+
+    private static void saveTasks() {
+        try {
+            File dir = new File(DATA_DIR);
+            if (!dir.exists()) {
+                dir.mkdir(); // creates ./data if missing
+            }
+
+            try (FileWriter fw = new FileWriter(DATA_PATH)) {
+                for (Task t : tasks) {
+                    fw.write(t.toSaveString() + System.lineSeparator());
+                }
+            }
+        } catch (IOException e) {
+            // Non-fatal: app still runs even if saving fails
+            printError("Could not save tasks to disk.", null);
+        }
+    }
+
+    private static void loadTasks() {
+        File file = new File(DATA_PATH);
+
+        if (!file.exists()) {
+            // first run: nothing to load
+            return;
+        }
+
+        try (Scanner sc = new Scanner(file)) {
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine().trim();
+                if (line.isEmpty()) {
+                    continue;
+                }
+                Task t = parseSavedTask(line);
+                if (t != null) {
+                    tasks.add(t);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            // Shouldn't happen if exists() is true, but keep safe
+        }
+    }
+
+    private static Task parseSavedTask(String line) {
+        // Format:
+        // T | 1 | description
+        // D | 0 | description | by
+        // E | 0 | description | from | to
+        String[] parts = line.split("\\s*\\|\\s*");
+        if (parts.length < 3) {
+            return null; // ignore corrupted line
+        }
+
+        String type = parts[0].trim();
+        String doneFlag = parts[1].trim();
+        String desc = parts[2].trim();
+
+        Task t;
+
+        switch (type) {
+            case "T":
+                t = new Todo(desc);
+                break;
+            case "D":
+                if (parts.length < 4) return null;
+                t = new Deadline(desc, parts[3].trim());
+                break;
+            case "E":
+                if (parts.length < 5) return null;
+                t = new Event(desc, parts[3].trim(), parts[4].trim());
+                break;
+            default:
+                return null;
+        }
+
+        t.setDone("1".equals(doneFlag));
+        return t;
     }
 
     // ===== Task model =====
@@ -345,7 +439,17 @@ public class Chiron {
             return isDone ? "X" : " ";
         }
 
+        String doneFlag() {
+            return isDone ? "1" : "0";
+        }
+
+        String descriptionForSave() {
+            return description;
+        }
+
         abstract TaskType type();
+
+        abstract String toSaveString();
 
         @Override
         public String toString() {
@@ -361,6 +465,11 @@ public class Chiron {
         @Override
         TaskType type() {
             return TaskType.TODO;
+        }
+
+        @Override
+        String toSaveString() {
+            return "T | " + doneFlag() + " | " + descriptionForSave();
         }
     }
 
@@ -380,6 +489,11 @@ public class Chiron {
         @Override
         public String toString() {
             return super.toString() + " (by: " + by + ")";
+        }
+
+        @Override
+        String toSaveString() {
+            return "D | " + doneFlag() + " | " + descriptionForSave() + " | " + by;
         }
     }
 
@@ -401,6 +515,11 @@ public class Chiron {
         @Override
         public String toString() {
             return super.toString() + " (from: " + from + " to: " + to + ")";
+        }
+
+        @Override
+        String toSaveString() {
+            return "E | " + doneFlag() + " | " + descriptionForSave() + " | " + from + " | " + to;
         }
     }
 }
