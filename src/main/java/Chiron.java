@@ -25,6 +25,42 @@ public class Chiron {
 
     private static final ArrayList<Task> tasks = new ArrayList<>();
 
+    // ===== Enums (A-Enums) =====
+
+    private enum Command {
+        BYE, LIST, TODO, DEADLINE, EVENT, MARK, UNMARK, DELETE, UNKNOWN;
+
+        static Command from(String word) {
+            return switch (word.toLowerCase()) {
+                case "bye" -> BYE;
+                case "list" -> LIST;
+                case "todo" -> TODO;
+                case "deadline" -> DEADLINE;
+                case "event" -> EVENT;
+                case "mark" -> MARK;
+                case "unmark" -> UNMARK;
+                case "delete" -> DELETE;
+                default -> UNKNOWN;
+            };
+        }
+    }
+
+    private enum TaskType {
+        TODO("[T]"), DEADLINE("[D]"), EVENT("[E]");
+
+        private final String icon;
+
+        TaskType(String icon) {
+            this.icon = icon;
+        }
+
+        String icon() {
+            return icon;
+        }
+    }
+
+    // ===== Main loop =====
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
@@ -43,57 +79,55 @@ public class Chiron {
      * Returns true if the program should continue running, false if it should exit.
      */
     private static boolean handleInput(String rawInput) {
-        String input = rawInput.trim();
+        String trimmed = rawInput.trim();
 
-        if (input.equalsIgnoreCase("bye")) {
-            printGoodbye();
-            return false;
-        }
-
-        if (input.equalsIgnoreCase("list")) {
-            printTaskList();
+        if (trimmed.isEmpty()) {
+            printError("Speak, or don’t. But don’t waste my time.", HELP);
             return true;
         }
 
-        if (input.startsWith("mark")) {
-            String arg = input.substring(4).trim();
-            markTask(arg, true);
-            return true;
-        }
+        String[] parts = trimmed.split("\\s+", 2);
+        Command cmd = Command.from(parts[0]);
+        String args = (parts.length < 2) ? "" : parts[1];
 
-        if (input.startsWith("unmark")) {
-            String arg = input.substring(6).trim();
-            markTask(arg, false);
-            return true;
-        }
-
-        if (input.startsWith("delete")) {
-            String arg = input.substring(6).trim();
-            deleteTask(arg);
-            return true;
-        }
-
-        if (input.startsWith("todo")) {
-            String desc = input.substring(4).trim();
-            addTodo(desc);
-            return true;
-        }
-
-        if (input.startsWith("deadline")) {
-            String rest = input.substring(8).trim();
-            addDeadline(rest);
-            return true;
-        }
-
-        if (input.startsWith("event")) {
-            String rest = input.substring(5).trim();
-            addEvent(rest);
-            return true;
-        }
-
-        // Level 5: unknown commands handled gracefully
-        printError("I don't know that command yet.", HELP);
-        return true;
+        return switch (cmd) {
+            case BYE -> {
+                printGoodbye();
+                yield false;
+            }
+            case LIST -> {
+                printTaskList();
+                yield true;
+            }
+            case MARK -> {
+                markTask(args, true);
+                yield true;
+            }
+            case UNMARK -> {
+                markTask(args, false);
+                yield true;
+            }
+            case DELETE -> {
+                deleteTask(args);
+                yield true;
+            }
+            case TODO -> {
+                addTodo(args);
+                yield true;
+            }
+            case DEADLINE -> {
+                addDeadline(args);
+                yield true;
+            }
+            case EVENT -> {
+                addEvent(args);
+                yield true;
+            }
+            case UNKNOWN -> {
+                printError("I don't know that command yet.", HELP);
+                yield true;
+            }
+        };
     }
 
     // ===== UI =====
@@ -141,12 +175,13 @@ public class Chiron {
     }
 
     private static void addTodo(String desc) {
-        if (desc.isEmpty()) {
+        String cleaned = desc.trim();
+        if (cleaned.isEmpty()) {
             printError("A todo with no description? Brave.", "Try: todo read CS2103T spec");
             return;
         }
 
-        Task task = new Todo(desc);
+        Task task = new Todo(cleaned);
         tasks.add(task);
 
         printLine();
@@ -157,19 +192,20 @@ public class Chiron {
     }
 
     private static void addDeadline(String rest) {
-        if (rest.isEmpty()) {
+        String cleaned = rest.trim();
+        if (cleaned.isEmpty()) {
             printError("A deadline needs details.", "Try: deadline submit iP /by tonight");
             return;
         }
 
-        int byPos = rest.indexOf("/by");
+        int byPos = cleaned.indexOf("/by");
         if (byPos == -1) {
             printError("Deadlines need a /by.", "Try: deadline submit iP /by tonight");
             return;
         }
 
-        String desc = rest.substring(0, byPos).trim();
-        String by = rest.substring(byPos + 3).trim();
+        String desc = cleaned.substring(0, byPos).trim();
+        String by = cleaned.substring(byPos + 3).trim();
 
         if (desc.isEmpty()) {
             printError("Deadline description is missing.", "Try: deadline submit iP /by tonight");
@@ -191,22 +227,23 @@ public class Chiron {
     }
 
     private static void addEvent(String rest) {
-        if (rest.isEmpty()) {
+        String cleaned = rest.trim();
+        if (cleaned.isEmpty()) {
             printError("An event needs details.", "Try: event meeting /from 2pm /to 4pm");
             return;
         }
 
-        int fromPos = rest.indexOf("/from");
-        int toPos = rest.indexOf("/to");
+        int fromPos = cleaned.indexOf("/from");
+        int toPos = cleaned.indexOf("/to");
 
         if (fromPos == -1 || toPos == -1 || toPos < fromPos) {
             printError("Events need both /from and /to.", "Try: event meeting /from 2pm /to 4pm");
             return;
         }
 
-        String desc = rest.substring(0, fromPos).trim();
-        String from = rest.substring(fromPos + 5, toPos).trim();
-        String to = rest.substring(toPos + 3).trim();
+        String desc = cleaned.substring(0, fromPos).trim();
+        String from = cleaned.substring(fromPos + 5, toPos).trim();
+        String to = cleaned.substring(toPos + 3).trim();
 
         if (desc.isEmpty()) {
             printError("Event description is missing.", "Try: event meeting /from 2pm /to 4pm");
@@ -308,11 +345,11 @@ public class Chiron {
             return isDone ? "X" : " ";
         }
 
-        abstract String typeIcon();
+        abstract TaskType type();
 
         @Override
         public String toString() {
-            return typeIcon() + "[" + statusIcon() + "] " + description;
+            return type().icon() + "[" + statusIcon() + "] " + description;
         }
     }
 
@@ -322,8 +359,8 @@ public class Chiron {
         }
 
         @Override
-        String typeIcon() {
-            return "[T]";
+        TaskType type() {
+            return TaskType.TODO;
         }
     }
 
@@ -336,8 +373,8 @@ public class Chiron {
         }
 
         @Override
-        String typeIcon() {
-            return "[D]";
+        TaskType type() {
+            return TaskType.DEADLINE;
         }
 
         @Override
@@ -357,8 +394,8 @@ public class Chiron {
         }
 
         @Override
-        String typeIcon() {
-            return "[E]";
+        TaskType type() {
+            return TaskType.EVENT;
         }
 
         @Override
