@@ -20,6 +20,7 @@ public class Chiron {
                     + "  list\n"
                     + "  mark <n>\n"
                     + "  unmark <n>\n"
+                    + "  delete <n>\n"
                     + "  bye";
 
     private static final ArrayList<Task> tasks = new ArrayList<>();
@@ -66,6 +67,12 @@ public class Chiron {
             return true;
         }
 
+        if (input.startsWith("delete")) {
+            String arg = input.substring(6).trim();
+            deleteTask(arg);
+            return true;
+        }
+
         if (input.startsWith("todo")) {
             String desc = input.substring(4).trim();
             addTodo(desc);
@@ -84,7 +91,7 @@ public class Chiron {
             return true;
         }
 
-        // Level 5: unknown commands should be handled gracefully (not echoed)
+        // Level 5: unknown commands handled gracefully
         printError("I don't know that command yet.", HELP);
         return true;
     }
@@ -150,7 +157,6 @@ public class Chiron {
     }
 
     private static void addDeadline(String rest) {
-        // format: deadline <desc> /by <when>
         if (rest.isEmpty()) {
             printError("A deadline needs details.", "Try: deadline submit iP /by tonight");
             return;
@@ -163,7 +169,7 @@ public class Chiron {
         }
 
         String desc = rest.substring(0, byPos).trim();
-        String by = rest.substring(byPos + 3).trim(); // after "/by"
+        String by = rest.substring(byPos + 3).trim();
 
         if (desc.isEmpty()) {
             printError("Deadline description is missing.", "Try: deadline submit iP /by tonight");
@@ -185,7 +191,6 @@ public class Chiron {
     }
 
     private static void addEvent(String rest) {
-        // format: event <desc> /from <start> /to <end>
         if (rest.isEmpty()) {
             printError("An event needs details.", "Try: event meeting /from 2pm /to 4pm");
             return;
@@ -200,8 +205,8 @@ public class Chiron {
         }
 
         String desc = rest.substring(0, fromPos).trim();
-        String from = rest.substring(fromPos + 5, toPos).trim(); // between "/from" and "/to"
-        String to = rest.substring(toPos + 3).trim();            // after "/to"
+        String from = rest.substring(fromPos + 5, toPos).trim();
+        String to = rest.substring(toPos + 3).trim();
 
         if (desc.isEmpty()) {
             printError("Event description is missing.", "Try: event meeting /from 2pm /to 4pm");
@@ -248,6 +253,27 @@ public class Chiron {
             System.out.println("Chiron: Back to unfinished business.");
         }
         System.out.println("  " + idx + ". " + task);
+        printLine();
+    }
+
+    private static void deleteTask(String arg) {
+        int idx = parseIndex(arg);
+        if (idx == -1) {
+            printError("Give me a valid task number to delete.", "Try: delete 1");
+            return;
+        }
+
+        if (idx < 1 || idx > tasks.size()) {
+            printError("That task number doesn't exist.", "Use 'list' to see valid task numbers.");
+            return;
+        }
+
+        Task removed = tasks.remove(idx - 1);
+
+        printLine();
+        System.out.println("Chiron: Deleted. One less weight on your mind.");
+        System.out.println("  " + removed);
+        System.out.println("Now you have " + tasks.size() + " task(s).");
         printLine();
     }
 
