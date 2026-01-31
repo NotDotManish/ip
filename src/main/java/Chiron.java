@@ -14,9 +14,9 @@ public class Chiron {
 
     private static final String MSG_UNKNOWN =
             "Chiron: I don't know that command yet.\n"
-                    + "Try: todo <desc> | list | bye";
+                    + "Try: todo <desc> | list | mark <n> | unmark <n> | bye";
 
-    private static final ArrayList<String> tasks = new ArrayList<>();
+    private static final ArrayList<Task> tasks = new ArrayList<>();
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -32,9 +32,9 @@ public class Chiron {
         scanner.close();
     }
 
-
-     //Returns true if the program should continue running, false if it should exit.
-
+    /**
+     * Returns true if the program should continue running, false if it should exit.
+     */
     private static boolean handleInput(String rawInput) {
         String input = rawInput.trim();
 
@@ -54,7 +54,19 @@ public class Chiron {
             return true;
         }
 
-        // Level 1: Echo everything else
+        if (input.startsWith("mark")) {
+            String arg = input.substring(4).trim();
+            markTask(arg, true);
+            return true;
+        }
+
+        if (input.startsWith("unmark")) {
+            String arg = input.substring(6).trim();
+            markTask(arg, false);
+            return true;
+        }
+
+        // Level 1 behavior: Echo unknown commands
         printEcho(input);
         return true;
     }
@@ -89,11 +101,12 @@ public class Chiron {
             return;
         }
 
-        tasks.add(desc);
+        Task task = new Task(desc);
+        tasks.add(task);
 
         printLine();
         System.out.println("Chiron: Added. Don’t abandon it.");
-        System.out.println("  " + tasks.size() + ". [T] " + desc);
+        System.out.println("  " + tasks.size() + ". " + task);
         System.out.println("Now you have " + tasks.size() + " task(s).");
         printLine();
     }
@@ -105,19 +118,73 @@ public class Chiron {
         } else {
             System.out.println("Chiron: Here’s what you owe yourself:");
             for (int i = 0; i < tasks.size(); i++) {
-                System.out.println((i + 1) + ". [T] " + tasks.get(i));
+                System.out.println((i + 1) + ". " + tasks.get(i));
             }
         }
         printLine();
     }
 
-    private static void printUnknownCommand() {
+    private static void markTask(String arg, boolean isDone) {
+        int idx = parseIndex(arg);
+        if (idx == -1) {
+            printLine();
+            System.out.println("Chiron: Give me a task number. Example: " + (isDone ? "mark 1" : "unmark 1"));
+            printLine();
+            return;
+        }
+        if (idx < 1 || idx > tasks.size()) {
+            printLine();
+            System.out.println("Chiron: That task number doesn't exist. Use 'list' and pick a valid one.");
+            printLine();
+            return;
+        }
+
+        Task task = tasks.get(idx - 1);
+        task.setDone(isDone);
+
         printLine();
-        System.out.println(MSG_UNKNOWN);
+        if (isDone) {
+            System.out.println("Chiron: Good. Discipline looks good on you.");
+            System.out.println("  " + idx + ". " + task);
+        } else {
+            System.out.println("Chiron: Back to unfinished business.");
+            System.out.println("  " + idx + ". " + task);
+        }
         printLine();
+    }
+
+    private static int parseIndex(String s) {
+        String trimmed = s.trim();
+        if (trimmed.isEmpty()) {
+            return -1;
+        }
+        try {
+            return Integer.parseInt(trimmed);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 
     private static void printLine() {
         System.out.println(LINE);
+    }
+
+    private static class Task {
+        private final String description;
+        private boolean isDone;
+
+        Task(String description) {
+            this.description = description;
+            this.isDone = false;
+        }
+
+        void setDone(boolean done) {
+            this.isDone = done;
+        }
+
+        @Override
+        public String toString() {
+            return "[T][" + (isDone ? "X" : " ") + "] " + description;
+        }
     }
 }
