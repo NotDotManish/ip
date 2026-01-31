@@ -12,6 +12,16 @@ public class Chiron {
 
     private static final String MSG_BYE = "Chiron: Farewell. Train well—come back sharper.";
 
+    private static final String HELP =
+            "Try:\n"
+                    + "  todo <desc>\n"
+                    + "  deadline <desc> /by <time>\n"
+                    + "  event <desc> /from <start> /to <end>\n"
+                    + "  list\n"
+                    + "  mark <n>\n"
+                    + "  unmark <n>\n"
+                    + "  bye";
+
     private static final ArrayList<Task> tasks = new ArrayList<>();
 
     public static void main(String[] args) {
@@ -74,12 +84,12 @@ public class Chiron {
             return true;
         }
 
-        // Keep Level 1 “echo unknown” behaviour for now
-        printEcho(input);
+        // Level 5: unknown commands should be handled gracefully (not echoed)
+        printError("I don't know that command yet.", HELP);
         return true;
     }
 
-    // ===== Level 0 UI =====
+    // ===== UI =====
 
     private static void printGreeting() {
         printLine();
@@ -99,14 +109,16 @@ public class Chiron {
         System.out.println(LINE);
     }
 
-    private static void printEcho(String input) {
+    private static void printError(String message, String hint) {
         printLine();
-        System.out.println("Chiron: \"" + input + "\"");
-        System.out.println("Chiron: Noted. Now what do you actually want to do?");
+        System.out.println("Chiron: " + message);
+        if (hint != null && !hint.isBlank()) {
+            System.out.println(hint);
+        }
         printLine();
     }
 
-    // ===== Level 2/3/4 commands =====
+    // ===== Commands =====
 
     private static void printTaskList() {
         printLine();
@@ -123,10 +135,7 @@ public class Chiron {
 
     private static void addTodo(String desc) {
         if (desc.isEmpty()) {
-            printLine();
-            System.out.println("Chiron: A todo with no description? Brave.");
-            System.out.println("Try: todo read CS2103T spec");
-            printLine();
+            printError("A todo with no description? Brave.", "Try: todo read CS2103T spec");
             return;
         }
 
@@ -142,23 +151,26 @@ public class Chiron {
 
     private static void addDeadline(String rest) {
         // format: deadline <desc> /by <when>
+        if (rest.isEmpty()) {
+            printError("A deadline needs details.", "Try: deadline submit iP /by tonight");
+            return;
+        }
+
         int byPos = rest.indexOf("/by");
         if (byPos == -1) {
-            printLine();
-            System.out.println("Chiron: Deadlines need a /by.");
-            System.out.println("Try: deadline submit iP /by tonight");
-            printLine();
+            printError("Deadlines need a /by.", "Try: deadline submit iP /by tonight");
             return;
         }
 
         String desc = rest.substring(0, byPos).trim();
         String by = rest.substring(byPos + 3).trim(); // after "/by"
 
-        if (desc.isEmpty() || by.isEmpty()) {
-            printLine();
-            System.out.println("Chiron: Incomplete deadline. Give me both a description and a /by time.");
-            System.out.println("Try: deadline return book /by Sunday");
-            printLine();
+        if (desc.isEmpty()) {
+            printError("Deadline description is missing.", "Try: deadline submit iP /by tonight");
+            return;
+        }
+        if (by.isEmpty()) {
+            printError("Deadline time is missing.", "Try: deadline submit iP /by tonight");
             return;
         }
 
@@ -174,14 +186,16 @@ public class Chiron {
 
     private static void addEvent(String rest) {
         // format: event <desc> /from <start> /to <end>
+        if (rest.isEmpty()) {
+            printError("An event needs details.", "Try: event meeting /from 2pm /to 4pm");
+            return;
+        }
+
         int fromPos = rest.indexOf("/from");
         int toPos = rest.indexOf("/to");
 
         if (fromPos == -1 || toPos == -1 || toPos < fromPos) {
-            printLine();
-            System.out.println("Chiron: Events need both /from and /to.");
-            System.out.println("Try: event project meeting /from 2pm /to 4pm");
-            printLine();
+            printError("Events need both /from and /to.", "Try: event meeting /from 2pm /to 4pm");
             return;
         }
 
@@ -189,11 +203,16 @@ public class Chiron {
         String from = rest.substring(fromPos + 5, toPos).trim(); // between "/from" and "/to"
         String to = rest.substring(toPos + 3).trim();            // after "/to"
 
-        if (desc.isEmpty() || from.isEmpty() || to.isEmpty()) {
-            printLine();
-            System.out.println("Chiron: Incomplete event. Give me description, /from, and /to.");
-            System.out.println("Try: event training /from 6pm /to 7pm");
-            printLine();
+        if (desc.isEmpty()) {
+            printError("Event description is missing.", "Try: event meeting /from 2pm /to 4pm");
+            return;
+        }
+        if (from.isEmpty()) {
+            printError("Event start time is missing.", "Try: event meeting /from 2pm /to 4pm");
+            return;
+        }
+        if (to.isEmpty()) {
+            printError("Event end time is missing.", "Try: event meeting /from 2pm /to 4pm");
             return;
         }
 
@@ -210,15 +229,12 @@ public class Chiron {
     private static void markTask(String arg, boolean isDone) {
         int idx = parseIndex(arg);
         if (idx == -1) {
-            printLine();
-            System.out.println("Chiron: Give me a task number. Example: " + (isDone ? "mark 1" : "unmark 1"));
-            printLine();
+            printError("Give me a valid task number.", "Try: " + (isDone ? "mark 1" : "unmark 1"));
             return;
         }
+
         if (idx < 1 || idx > tasks.size()) {
-            printLine();
-            System.out.println("Chiron: That task number doesn't exist. Use 'list' and pick a valid one.");
-            printLine();
+            printError("That task number doesn't exist.", "Use 'list' to see valid task numbers.");
             return;
         }
 
@@ -262,23 +278,15 @@ public class Chiron {
             this.isDone = done;
         }
 
-        boolean isDone() {
-            return isDone;
-        }
-
-        String description() {
-            return description;
-        }
-
-        abstract String typeIcon();
-
         String statusIcon() {
             return isDone ? "X" : " ";
         }
 
+        abstract String typeIcon();
+
         @Override
         public String toString() {
-            return typeIcon() + "[" + statusIcon() + "] " + description();
+            return typeIcon() + "[" + statusIcon() + "] " + description;
         }
     }
 
