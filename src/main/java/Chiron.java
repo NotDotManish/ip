@@ -12,10 +12,6 @@ public class Chiron {
 
     private static final String MSG_BYE = "Chiron: Farewell. Train well—come back sharper.";
 
-    private static final String MSG_UNKNOWN =
-            "Chiron: I don't know that command yet.\n"
-                    + "Try: todo <desc> | list | mark <n> | unmark <n> | bye";
-
     private static final ArrayList<Task> tasks = new ArrayList<>();
 
     public static void main(String[] args) {
@@ -48,12 +44,6 @@ public class Chiron {
             return true;
         }
 
-        if (input.startsWith("todo")) {
-            String desc = input.substring(4).trim();
-            addTodo(desc);
-            return true;
-        }
-
         if (input.startsWith("mark")) {
             String arg = input.substring(4).trim();
             markTask(arg, true);
@@ -66,10 +56,30 @@ public class Chiron {
             return true;
         }
 
-        // Level 1 behavior: Echo unknown commands
+        if (input.startsWith("todo")) {
+            String desc = input.substring(4).trim();
+            addTodo(desc);
+            return true;
+        }
+
+        if (input.startsWith("deadline")) {
+            String rest = input.substring(8).trim();
+            addDeadline(rest);
+            return true;
+        }
+
+        if (input.startsWith("event")) {
+            String rest = input.substring(5).trim();
+            addEvent(rest);
+            return true;
+        }
+
+        // Keep Level 1 “echo unknown” behaviour for now
         printEcho(input);
         return true;
     }
+
+    // ===== Level 0 UI =====
 
     private static void printGreeting() {
         printLine();
@@ -85,6 +95,10 @@ public class Chiron {
         printLine();
     }
 
+    private static void printLine() {
+        System.out.println(LINE);
+    }
+
     private static void printEcho(String input) {
         printLine();
         System.out.println("Chiron: \"" + input + "\"");
@@ -92,24 +106,7 @@ public class Chiron {
         printLine();
     }
 
-    private static void addTodo(String desc) {
-        if (desc.isEmpty()) {
-            printLine();
-            System.out.println("Chiron: A todo with no description? Brave.");
-            System.out.println("Try: todo read CS2103T docs");
-            printLine();
-            return;
-        }
-
-        Task task = new Task(desc);
-        tasks.add(task);
-
-        printLine();
-        System.out.println("Chiron: Added. Don’t abandon it.");
-        System.out.println("  " + tasks.size() + ". " + task);
-        System.out.println("Now you have " + tasks.size() + " task(s).");
-        printLine();
-    }
+    // ===== Level 2/3/4 commands =====
 
     private static void printTaskList() {
         printLine();
@@ -121,6 +118,92 @@ public class Chiron {
                 System.out.println((i + 1) + ". " + tasks.get(i));
             }
         }
+        printLine();
+    }
+
+    private static void addTodo(String desc) {
+        if (desc.isEmpty()) {
+            printLine();
+            System.out.println("Chiron: A todo with no description? Brave.");
+            System.out.println("Try: todo read CS2103T spec");
+            printLine();
+            return;
+        }
+
+        Task task = new Todo(desc);
+        tasks.add(task);
+
+        printLine();
+        System.out.println("Chiron: Added. Don’t abandon it.");
+        System.out.println("  " + tasks.size() + ". " + task);
+        System.out.println("Now you have " + tasks.size() + " task(s).");
+        printLine();
+    }
+
+    private static void addDeadline(String rest) {
+        // format: deadline <desc> /by <when>
+        int byPos = rest.indexOf("/by");
+        if (byPos == -1) {
+            printLine();
+            System.out.println("Chiron: Deadlines need a /by.");
+            System.out.println("Try: deadline submit iP /by tonight");
+            printLine();
+            return;
+        }
+
+        String desc = rest.substring(0, byPos).trim();
+        String by = rest.substring(byPos + 3).trim(); // after "/by"
+
+        if (desc.isEmpty() || by.isEmpty()) {
+            printLine();
+            System.out.println("Chiron: Incomplete deadline. Give me both a description and a /by time.");
+            System.out.println("Try: deadline return book /by Sunday");
+            printLine();
+            return;
+        }
+
+        Task task = new Deadline(desc, by);
+        tasks.add(task);
+
+        printLine();
+        System.out.println("Chiron: Deadline set. Don’t negotiate with time.");
+        System.out.println("  " + tasks.size() + ". " + task);
+        System.out.println("Now you have " + tasks.size() + " task(s).");
+        printLine();
+    }
+
+    private static void addEvent(String rest) {
+        // format: event <desc> /from <start> /to <end>
+        int fromPos = rest.indexOf("/from");
+        int toPos = rest.indexOf("/to");
+
+        if (fromPos == -1 || toPos == -1 || toPos < fromPos) {
+            printLine();
+            System.out.println("Chiron: Events need both /from and /to.");
+            System.out.println("Try: event project meeting /from 2pm /to 4pm");
+            printLine();
+            return;
+        }
+
+        String desc = rest.substring(0, fromPos).trim();
+        String from = rest.substring(fromPos + 5, toPos).trim(); // between "/from" and "/to"
+        String to = rest.substring(toPos + 3).trim();            // after "/to"
+
+        if (desc.isEmpty() || from.isEmpty() || to.isEmpty()) {
+            printLine();
+            System.out.println("Chiron: Incomplete event. Give me description, /from, and /to.");
+            System.out.println("Try: event training /from 6pm /to 7pm");
+            printLine();
+            return;
+        }
+
+        Task task = new Event(desc, from, to);
+        tasks.add(task);
+
+        printLine();
+        System.out.println("Chiron: Event logged. Show up.");
+        System.out.println("  " + tasks.size() + ". " + task);
+        System.out.println("Now you have " + tasks.size() + " task(s).");
         printLine();
     }
 
@@ -145,11 +228,10 @@ public class Chiron {
         printLine();
         if (isDone) {
             System.out.println("Chiron: Good. Discipline looks good on you.");
-            System.out.println("  " + idx + ". " + task);
         } else {
             System.out.println("Chiron: Back to unfinished business.");
-            System.out.println("  " + idx + ". " + task);
         }
+        System.out.println("  " + idx + ". " + task);
         printLine();
     }
 
@@ -165,11 +247,9 @@ public class Chiron {
         }
     }
 
-    private static void printLine() {
-        System.out.println(LINE);
-    }
+    // ===== Task model =====
 
-    private static class Task {
+    private static abstract class Task {
         private final String description;
         private boolean isDone;
 
@@ -182,9 +262,74 @@ public class Chiron {
             this.isDone = done;
         }
 
+        boolean isDone() {
+            return isDone;
+        }
+
+        String description() {
+            return description;
+        }
+
+        abstract String typeIcon();
+
+        String statusIcon() {
+            return isDone ? "X" : " ";
+        }
+
         @Override
         public String toString() {
-            return "[T][" + (isDone ? "X" : " ") + "] " + description;
+            return typeIcon() + "[" + statusIcon() + "] " + description();
+        }
+    }
+
+    private static class Todo extends Task {
+        Todo(String description) {
+            super(description);
+        }
+
+        @Override
+        String typeIcon() {
+            return "[T]";
+        }
+    }
+
+    private static class Deadline extends Task {
+        private final String by;
+
+        Deadline(String description, String by) {
+            super(description);
+            this.by = by;
+        }
+
+        @Override
+        String typeIcon() {
+            return "[D]";
+        }
+
+        @Override
+        public String toString() {
+            return super.toString() + " (by: " + by + ")";
+        }
+    }
+
+    private static class Event extends Task {
+        private final String from;
+        private final String to;
+
+        Event(String description, String from, String to) {
+            super(description);
+            this.from = from;
+            this.to = to;
+        }
+
+        @Override
+        String typeIcon() {
+            return "[E]";
+        }
+
+        @Override
+        public String toString() {
+            return super.toString() + " (from: " + from + " to: " + to + ")";
         }
     }
 }
