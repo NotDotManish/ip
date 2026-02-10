@@ -38,6 +38,6 @@ public class DeadlineCommand extends Command {
         storage.save(tasks);
 
         ui.showAdded(t, tasks.size(), "A deadline sharpens focus. Respect it.");
-        return true;
+        return false;
     }
 }

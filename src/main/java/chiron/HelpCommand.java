@@ -6,6 +6,6 @@ public class HelpCommand extends Command {
         ui.line();
         ui.showHelp();
         ui.line();
-        return true;
+        return false;
     }
 }

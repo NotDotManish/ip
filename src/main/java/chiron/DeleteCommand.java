@@ -18,6 +18,6 @@ public class DeleteCommand extends Command {
         storage.save(tasks);
 
         ui.showDeleted(removed, tasks.size());
-        return true;
+        return false;
     }
 }

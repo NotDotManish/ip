@@ -44,6 +44,6 @@ public class EventCommand extends Command {
         storage.save(tasks);
 
         ui.showAdded(t, tasks.size(), "Logged. Be present when the time comes.");
-        return true;
+        return false;
     }
 }

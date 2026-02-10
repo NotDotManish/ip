@@ -18,6 +18,6 @@ public class UnmarkCommand extends Command {
         storage.save(tasks);
 
         ui.showMarked(tasks.get(idx - 1), idx, false);
-        return true;
+        return false;
     }
 }

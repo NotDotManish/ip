@@ -18,6 +18,6 @@ public class MarkCommand extends Command {
         storage.save(tasks);
 
         ui.showMarked(tasks.get(idx - 1), idx, true);
-        return true;
+        return false;
     }
 }

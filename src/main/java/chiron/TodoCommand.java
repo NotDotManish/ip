@@ -18,6 +18,6 @@ public class TodoCommand extends Command {
         storage.save(tasks);
 
         ui.showAdded(t, tasks.size(), "Noted. Small steps still move you forward.");
-        return true;
+        return false;
     }
 }
