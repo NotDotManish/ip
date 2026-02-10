@@ -37,4 +37,10 @@ public class TaskList {
     public List<Task> asUnmodifiableList() {
         return List.copyOf(tasks);
     }
+
+    public List<Task> find(String keyword) {
+        return tasks.stream()
+                .filter(task -> task.description().contains(keyword))
+                .toList();
+    }
 }

@@ -14,7 +14,8 @@ public class Parser {
     private static final DateTimeFormatter OUTPUT_DATE = DateTimeFormatter.ofPattern("MMM dd yyyy");
     private static final DateTimeFormatter OUTPUT_DATE_TIME = DateTimeFormatter.ofPattern("MMM dd yyyy HHmm");
 
-    public record ParsedDateTime(LocalDateTime value, boolean hasTime) {}
+    public record ParsedDateTime(LocalDateTime value, boolean hasTime) {
+    }
 
     public static Command parse(String raw) throws ChironException {
         String trimmed = raw.trim();
@@ -35,6 +36,7 @@ public class Parser {
             case "mark" -> new MarkCommand(args);
             case "unmark" -> new UnmarkCommand(args);
             case "delete" -> new DeleteCommand(args);
+            case "find" -> new FindCommand(args);
             case "help" -> new HelpCommand();
             default -> throw new ChironException("That path doesn’t make sense yet.");
         };
@@ -42,7 +44,8 @@ public class Parser {
 
     public static ParsedDateTime parseDateTime(String raw) {
         String s = raw.trim();
-        if (s.isEmpty()) return null;
+        if (s.isEmpty())
+            return null;
 
         if (s.contains(" ")) {
             try {

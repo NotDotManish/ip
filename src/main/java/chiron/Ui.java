@@ -1,26 +1,23 @@
 package chiron;
 
 public class Ui {
-    private static final String LINE =
-            "____________________________________________________________";
+    private static final String LINE = "____________________________________________________________";
 
     private static final String GREET_1 = "Chiron: I’m here.";
     private static final String GREET_2 = "Wise enough to guide. Young enough to grow with you.";
     private static final String GREET_3 = "Tell me - what are we working on today?";
 
-    private static final String BYE =
-            "Chiron: Rest well. Progress favors the consistent — not the rushed.";
+    private static final String BYE = "Chiron: Rest well. Progress favors the consistent — not the rushed.";
 
-    private static final String HELP =
-            "Try:\n"
-                    + "  todo <desc>\n"
-                    + "  deadline <desc> /by <yyyy-mm-dd> [HHmm]\n"
-                    + "  event <desc> /from <yyyy-mm-dd> [HHmm] /to <yyyy-mm-dd> [HHmm]\n"
-                    + "  list\n"
-                    + "  mark <n>\n"
-                    + "  unmark <n>\n"
-                    + "  delete <n>\n"
-                    + "  bye";
+    private static final String HELP = "Try:\n"
+            + "  todo <desc>\n"
+            + "  deadline <desc> /by <yyyy-mm-dd> [HHmm]\n"
+            + "  event <desc> /from <yyyy-mm-dd> [HHmm] /to <yyyy-mm-dd> [HHmm]\n"
+            + "  list\n"
+            + "  mark <n>\n"
+            + "  unmark <n>\n"
+            + "  delete <n>\n"
+            + "  bye";
 
     public void showGreeting() {
         line();
@@ -83,6 +80,19 @@ public class Ui {
             System.out.println("Chiron: Then it isn’t finished yet. That’s alright.");
         }
         System.out.println("  " + index + ". " + task);
+        line();
+    }
+
+    public void showFindResult(java.util.List<Task> matches) {
+        line();
+        if (matches.isEmpty()) {
+            System.out.println("Chiron: I found nothing. Perhaps it never existed.");
+        } else {
+            System.out.println("Chiron: Here are the matching tasks in your list:");
+            for (int i = 0; i < matches.size(); i++) {
+                System.out.println((i + 1) + ". " + matches.get(i));
+            }
+        }
         line();
     }
 
