@@ -79,4 +79,18 @@ public class Chiron {
 
         scanner.close();
     }
+
+    /**
+     * Generates a response for the user's chat message.
+     */
+    public String getResponse(String input) {
+        try {
+            Command command = Parser.parse(input);
+            command.execute(tasks, ui, storage);
+            return ui.getResponse();
+        } catch (ChironException e) {
+            ui.showError(e.getMessage());
+            return ui.getResponse();
+        }
+    }
 }

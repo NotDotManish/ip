@@ -6,6 +6,33 @@ package chiron;
  */
 public class Ui {
     private static final String LINE = "____________________________________________________________";
+    private StringBuilder buffer = new StringBuilder();
+
+    /**
+     * Retrieves the current response buffer and clears it.
+     * 
+     * @return The buffered response string.
+     */
+    public String getResponse() {
+        String response = buffer.toString();
+        buffer.setLength(0);
+        return response;
+    }
+
+    /**
+     * Appends a message to the buffer and optionally prints it.
+     * 
+     * @param message The message to append.
+     */
+    /**
+     * Appends a message to the buffer and optionally prints it.
+     * 
+     * @param message The message to append.
+     */
+    private void println(String message) {
+        System.out.println(message);
+        buffer.append(message).append("\n");
+    }
 
     private static final String GREET_1 = "Chiron: I’m here.";
     private static final String GREET_2 = "Wise enough to guide. Young enough to grow with you.";
@@ -28,9 +55,9 @@ public class Ui {
      */
     public void showGreeting() {
         line();
-        System.out.println(GREET_1);
-        System.out.println(GREET_2);
-        System.out.println(GREET_3);
+        println(GREET_1);
+        println(GREET_2);
+        println(GREET_3);
         line();
     }
 
@@ -39,7 +66,7 @@ public class Ui {
      */
     public void showBye() {
         line();
-        System.out.println(BYE);
+        println(BYE);
         line();
     }
 
@@ -47,7 +74,7 @@ public class Ui {
      * Displays the help message with available commands.
      */
     public void showHelp() {
-        System.out.println(HELP);
+        println(HELP);
     }
 
     /**
@@ -57,7 +84,7 @@ public class Ui {
      */
     public void showError(String message) {
         line();
-        System.out.println("Chiron: " + message);
+        println("Chiron: " + message);
         line();
     }
 
@@ -69,11 +96,11 @@ public class Ui {
     public void showList(TaskList tasks) {
         line();
         if (tasks.size() == 0) {
-            System.out.println("Chiron: Your list is empty. Either you’re prepared - or you haven’t begun.");
+            println("Chiron: Your list is empty. Either you’re prepared - or you haven’t begun.");
         } else {
-            System.out.println("Chiron: Here’s what you owe yourself:");
+            println("Chiron: Here’s what you owe yourself:");
             for (int i = 0; i < tasks.size(); i++) {
-                System.out.println((i + 1) + ". " + tasks.get(i));
+                println((i + 1) + ". " + tasks.get(i));
             }
         }
         line();
@@ -88,9 +115,9 @@ public class Ui {
      */
     public void showAdded(Task task, int size, String message) {
         line();
-        System.out.println("Chiron: " + message);
-        System.out.println("  " + size + ". " + task);
-        System.out.println("Now you have " + size + " task(s).");
+        println("Chiron: " + message);
+        println("  " + size + ". " + task);
+        println("Now you have " + size + " task(s).");
         line();
     }
 
@@ -102,9 +129,9 @@ public class Ui {
      */
     public void showDeleted(Task removed, int size) {
         line();
-        System.out.println("Chiron: Letting go can be a form of clarity.");
-        System.out.println("  " + removed);
-        System.out.println("Now you have " + size + " task(s).");
+        println("Chiron: Letting go can be a form of clarity.");
+        println("  " + removed);
+        println("Now you have " + size + " task(s).");
         line();
     }
 
@@ -118,11 +145,11 @@ public class Ui {
     public void showMarked(Task task, int index, boolean isDone) {
         line();
         if (isDone) {
-            System.out.println("Chiron: Well done. Momentum is built like this.");
+            println("Chiron: Well done. Momentum is built like this.");
         } else {
-            System.out.println("Chiron: Then it isn’t finished yet. That’s alright.");
+            println("Chiron: Then it isn’t finished yet. That’s alright.");
         }
-        System.out.println("  " + index + ". " + task);
+        println("  " + index + ". " + task);
         line();
     }
 
@@ -134,11 +161,11 @@ public class Ui {
     public void showFindResult(java.util.List<Task> matches) {
         line();
         if (matches.isEmpty()) {
-            System.out.println("Chiron: I found nothing. Perhaps it never existed.");
+            println("Chiron: I found nothing. Perhaps it never existed.");
         } else {
-            System.out.println("Chiron: Here are the matching tasks in your list:");
+            println("Chiron: Here are the matching tasks in your list:");
             for (int i = 0; i < matches.size(); i++) {
-                System.out.println((i + 1) + ". " + matches.get(i));
+                println((i + 1) + ". " + matches.get(i));
             }
         }
         line();
@@ -148,6 +175,6 @@ public class Ui {
      * Prints a separator line.
      */
     public void line() {
-        System.out.println(LINE);
+        println(LINE);
     }
 }
