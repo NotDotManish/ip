@@ -1,13 +1,32 @@
 package chiron;
 
+/**
+ * Represents a command to add an Event task.
+ */
 public class EventCommand extends Command {
     private final String args;
 
+    /**
+     * Constructs an EventCommand.
+     *
+     * @param args The arguments containing description, start time, and end time.
+     */
     public EventCommand(String args) {
         this.args = args.trim();
     }
 
     @Override
+    /**
+     * Executes the event command.
+     * Parses the arguments, creates a new Event task, adds it to the list, saves to
+     * storage, and displays a confirmation.
+     *
+     * @param tasks   The list of tasks.
+     * @param ui      The user interface.
+     * @param storage The storage handler.
+     * @return False (continue running).
+     * @throws ChironException If arguments are invalid or saving fails.
+     */
     public boolean execute(TaskList tasks, Ui ui, Storage storage) throws ChironException {
         if (args.isEmpty()) {
             throw new ChironException("An event needs details.");

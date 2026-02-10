@@ -3,6 +3,10 @@ package chiron;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * The main class for the Chiron application.
+ * Chiron is a personal assistant that helps users track tasks.
+ */
 public class Chiron {
 
     private static final String DATA_DIR = "data";
@@ -12,6 +16,10 @@ public class Chiron {
     private final Storage storage;
     private final TaskList tasks;
 
+    /**
+     * Constructs a new Chiron instance.
+     * Initializes the UI, Storage, and TaskList components.
+     */
     public Chiron() {
         this.ui = new Ui();
         this.storage = new Storage(DATA_DIR, DATA_FILE);
@@ -33,10 +41,20 @@ public class Chiron {
         assert tasks != null : "tasks should not be null";
     }
 
+    /**
+     * The entry point of the application.
+     *
+     * @param args Command line arguments (not used).
+     */
     public static void main(String[] args) {
         new Chiron().run();
     }
 
+    /**
+     * Runs the main application loop.
+     * Continuously reads user commands, executes them, and updates storage until
+     * the exit command is given.
+     */
     public void run() {
         ui.showGreeting();
 

@@ -1,13 +1,32 @@
 package chiron;
 
+/**
+ * Represents a command to add a Deadline task.
+ */
 public class DeadlineCommand extends Command {
     private final String args;
 
+    /**
+     * Constructs a DeadlineCommand.
+     *
+     * @param args The arguments containing description and deadline.
+     */
     public DeadlineCommand(String args) {
         this.args = args.trim();
     }
 
     @Override
+    /**
+     * Executes the deadline command.
+     * Parses the arguments, creates a new Deadline task, adds it to the list, saves
+     * to storage, and displays a confirmation.
+     *
+     * @param tasks   The list of tasks.
+     * @param ui      The user interface.
+     * @param storage The storage handler.
+     * @return False (continue running).
+     * @throws ChironException If arguments are invalid or saving fails.
+     */
     public boolean execute(TaskList tasks, Ui ui, Storage storage) throws ChironException {
         if (args.isEmpty()) {
             throw new ChironException("A deadline needs details.");

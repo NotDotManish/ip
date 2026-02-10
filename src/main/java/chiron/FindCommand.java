@@ -2,14 +2,32 @@ package chiron;
 
 import java.util.List;
 
+/**
+ * Represents a command to find tasks by keyword.
+ */
 public class FindCommand extends Command {
     private final String keyword;
 
+    /**
+     * Constructs a FindCommand.
+     *
+     * @param keyword The keyword to search for.
+     */
     public FindCommand(String keyword) {
         this.keyword = keyword.trim();
     }
 
     @Override
+    /**
+     * Executes the find command.
+     * Searches for tasks containing the keyword and displays the results.
+     *
+     * @param tasks   The list of tasks.
+     * @param ui      The user interface.
+     * @param storage The storage handler.
+     * @return False (continue running).
+     * @throws ChironException If the keyword is empty.
+     */
     public boolean execute(TaskList tasks, Ui ui, Storage storage) throws ChironException {
         if (keyword.isEmpty()) {
             throw new ChironException("Find what? Silence tells me nothing.");

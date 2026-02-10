@@ -1,5 +1,9 @@
 package chiron;
 
+/**
+ * Handles user interface interactions.
+ * Displays messages, errors, and task lists to the user.
+ */
 public class Ui {
     private static final String LINE = "____________________________________________________________";
 
@@ -19,6 +23,9 @@ public class Ui {
             + "  delete <n>\n"
             + "  bye";
 
+    /**
+     * Displays the welcome message to the user.
+     */
     public void showGreeting() {
         line();
         System.out.println(GREET_1);
@@ -27,22 +34,38 @@ public class Ui {
         line();
     }
 
+    /**
+     * Displays the exit message to the user.
+     */
     public void showBye() {
         line();
         System.out.println(BYE);
         line();
     }
 
+    /**
+     * Displays the help message with available commands.
+     */
     public void showHelp() {
         System.out.println(HELP);
     }
 
+    /**
+     * Displays an error message to the user.
+     *
+     * @param message The error message to display.
+     */
     public void showError(String message) {
         line();
         System.out.println("Chiron: " + message);
         line();
     }
 
+    /**
+     * Displays the list of tasks.
+     *
+     * @param tasks The TaskList containing tasks to display.
+     */
     public void showList(TaskList tasks) {
         line();
         if (tasks.size() == 0) {
@@ -56,6 +79,13 @@ public class Ui {
         line();
     }
 
+    /**
+     * Displays a message confirming a task has been added.
+     *
+     * @param task    The task that was added.
+     * @param size    The new total number of tasks.
+     * @param message The confirmation message.
+     */
     public void showAdded(Task task, int size, String message) {
         line();
         System.out.println("Chiron: " + message);
@@ -64,6 +94,12 @@ public class Ui {
         line();
     }
 
+    /**
+     * Displays a message confirming a task has been deleted.
+     *
+     * @param removed The task that was removed.
+     * @param size    The new total number of tasks.
+     */
     public void showDeleted(Task removed, int size) {
         line();
         System.out.println("Chiron: Letting go can be a form of clarity.");
@@ -72,6 +108,13 @@ public class Ui {
         line();
     }
 
+    /**
+     * Displays a message confirming a task status change (mark/unmark).
+     *
+     * @param task   The task that was modified.
+     * @param index  The index of the task.
+     * @param isDone True if marked done, false if unmarked.
+     */
     public void showMarked(Task task, int index, boolean isDone) {
         line();
         if (isDone) {
@@ -83,6 +126,11 @@ public class Ui {
         line();
     }
 
+    /**
+     * Displays the results of a find operation.
+     *
+     * @param matches The list of tasks matching the keyword.
+     */
     public void showFindResult(java.util.List<Task> matches) {
         line();
         if (matches.isEmpty()) {
@@ -96,6 +144,9 @@ public class Ui {
         line();
     }
 
+    /**
+     * Prints a separator line.
+     */
     public void line() {
         System.out.println(LINE);
     }
