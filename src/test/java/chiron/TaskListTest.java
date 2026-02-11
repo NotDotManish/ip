@@ -1,11 +1,17 @@
 package chiron;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.Test;
+
+/**
+ * Tests for the TaskList class.
+ */
 public class TaskListTest {
 
+    /**
+     * Tests adding a task to the list.
+     */
     @Test
     public void add_task_success() {
         // Verify that adding a task increases the list size
@@ -16,6 +22,9 @@ public class TaskListTest {
         assertEquals(1, tasks.size());
     }
 
+    /**
+     * Tests deleting a task from the list.
+     */
     @Test
     public void delete_task_success() {
         // Verify that removing a task decreases list size and returns the correct task
@@ -29,6 +38,9 @@ public class TaskListTest {
         assertEquals(1, tasks.size());
     }
 
+    /**
+     * Tests retrieving a task from the list.
+     */
     @Test
     public void get_task_success() {
         // Verify retrieving a task by index

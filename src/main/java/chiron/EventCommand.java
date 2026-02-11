@@ -15,7 +15,6 @@ public class EventCommand extends Command {
         this.args = args.trim();
     }
 
-    @Override
     /**
      * Executes the event command.
      * Parses the arguments, creates a new Event task, adds it to the list, saves to
@@ -27,6 +26,7 @@ public class EventCommand extends Command {
      * @return False (continue running).
      * @throws ChironException If arguments are invalid or saving fails.
      */
+    @Override
     public boolean execute(TaskList tasks, Ui ui, Storage storage) throws ChironException {
         if (args.isEmpty()) {
             throw new ChironException("An event needs details.");

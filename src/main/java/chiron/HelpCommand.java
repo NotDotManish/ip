@@ -4,7 +4,6 @@ package chiron;
  * Represents a command to display help commands.
  */
 public class HelpCommand extends Command {
-    @Override
     /**
      * Executes the help command.
      * Displays the help message to the user.
@@ -14,6 +13,7 @@ public class HelpCommand extends Command {
      * @param storage The storage handler.
      * @return False (continue running).
      */
+    @Override
     public boolean execute(TaskList tasks, Ui ui, Storage storage) {
         ui.line();
         ui.showHelp();

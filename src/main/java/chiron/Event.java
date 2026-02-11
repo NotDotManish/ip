@@ -81,7 +81,7 @@ public class Event extends Task {
 
     @Override
     public String toSaveString() {
-        return "E | " + doneFlag() + " | " + description()
+        return "E | " + doneFlag() + " | " + getDescription()
                 + " | " + Parser.storeDateTime(from, fromHasTime)
                 + " | " + Parser.storeDateTime(to, toHasTime);
     }

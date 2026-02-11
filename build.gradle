@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'application'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'checkstyle'
     id 'org.openjfx.javafxplugin' version '0.0.13'
 }
@@ -33,12 +33,12 @@ test {
 }
 
 application {
-    mainClass = 'chiron.Chiron'
+    mainClass.set("chiron.Launcher")
 }
 
 shadowJar {
     archiveBaseName = "chiron"
-    archiveClassifier = ""
+    archiveClassifier = "all"
 }
 
 // Java 17 configuration

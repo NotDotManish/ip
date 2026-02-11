@@ -15,7 +15,6 @@ public class DeadlineCommand extends Command {
         this.args = args.trim();
     }
 
-    @Override
     /**
      * Executes the deadline command.
      * Parses the arguments, creates a new Deadline task, adds it to the list, saves
@@ -27,6 +26,7 @@ public class DeadlineCommand extends Command {
      * @return False (continue running).
      * @throws ChironException If arguments are invalid or saving fails.
      */
+    @Override
     public boolean execute(TaskList tasks, Ui ui, Storage storage) throws ChironException {
         if (args.isEmpty()) {
             throw new ChironException("A deadline needs details.");

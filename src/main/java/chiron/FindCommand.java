@@ -17,17 +17,16 @@ public class FindCommand extends Command {
         this.keyword = keyword.trim();
     }
 
-    @Override
     /**
      * Executes the find command.
-     * Searches for tasks containing the keyword and displays the results.
+     * Searches for tasks containing the keyword and displays matching results.
      *
      * @param tasks   The list of tasks.
      * @param ui      The user interface.
      * @param storage The storage handler.
      * @return False (continue running).
-     * @throws ChironException If the keyword is empty.
      */
+    @Override
     public boolean execute(TaskList tasks, Ui ui, Storage storage) throws ChironException {
         if (keyword.isEmpty()) {
             throw new ChironException("Find what? Silence tells me nothing.");

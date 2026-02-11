@@ -53,7 +53,7 @@ public class Deadline extends Task {
 
     @Override
     public String toSaveString() {
-        return "D | " + doneFlag() + " | " + description()
+        return "D | " + doneFlag() + " | " + getDescription()
                 + " | " + Parser.storeDateTime(by, byHasTime);
     }
 }

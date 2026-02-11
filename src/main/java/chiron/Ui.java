@@ -6,34 +6,6 @@ package chiron;
  */
 public class Ui {
     private static final String LINE = "____________________________________________________________";
-    private StringBuilder buffer = new StringBuilder();
-
-    /**
-     * Retrieves the current response buffer and clears it.
-     * 
-     * @return The buffered response string.
-     */
-    public String getResponse() {
-        String response = buffer.toString();
-        buffer.setLength(0);
-        return response;
-    }
-
-    /**
-     * Appends a message to the buffer and optionally prints it.
-     * 
-     * @param message The message to append.
-     */
-    /**
-     * Appends a message to the buffer and optionally prints it.
-     * 
-     * @param message The message to append.
-     */
-    private void println(String message) {
-        System.out.println(message);
-        buffer.append(message).append("\n");
-    }
-
     private static final String GREET_1 = "Chiron: I’m here.";
     private static final String GREET_2 = "Wise enough to guide. Young enough to grow with you.";
     private static final String GREET_3 = "Tell me - what are we working on today?";
@@ -49,6 +21,29 @@ public class Ui {
             + "  unmark <n>\n"
             + "  delete <n>\n"
             + "  bye";
+
+    private StringBuilder buffer = new StringBuilder();
+
+    /**
+     * Retrieves the current response buffer and clears it.
+     *
+     * @return The buffered response string.
+     */
+    public String getResponse() {
+        String response = buffer.toString();
+        buffer.setLength(0);
+        return response;
+    }
+
+    /**
+     * Appends a message to the buffer and optionally prints it.
+     *
+     * @param message The message to append.
+     */
+    private void println(String message) {
+        System.out.println(message);
+        buffer.append(message).append("\n");
+    }
 
     /**
      * Displays the welcome message to the user.

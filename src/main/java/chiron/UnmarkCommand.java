@@ -15,7 +15,6 @@ public class UnmarkCommand extends Command {
         this.arg = arg;
     }
 
-    @Override
     /**
      * Executes the unmark command.
      * Marks the task at the specified index as not done, saves to storage, and
@@ -27,6 +26,7 @@ public class UnmarkCommand extends Command {
      * @return False (continue running).
      * @throws ChironException If the index is invalid or saving fails.
      */
+    @Override
     public boolean execute(TaskList tasks, Ui ui, Storage storage) throws ChironException {
         int idx = Parser.parseIndex(arg);
         if (idx < 1 || idx > tasks.size()) {

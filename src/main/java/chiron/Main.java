@@ -13,7 +13,7 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-    private Chiron chiron = new Chiron("data/tasks.txt");
+    private Chiron chiron = new Chiron();
 
     @Override
     public void start(Stage stage) {

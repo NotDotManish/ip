@@ -15,7 +15,6 @@ public class TodoCommand extends Command {
         this.desc = args.trim();
     }
 
-    @Override
     /**
      * Executes the todo command.
      * Creates a new Todo task, adds it to the list, saves to storage, and displays
@@ -27,6 +26,7 @@ public class TodoCommand extends Command {
      * @return False (continue running).
      * @throws ChironException If the description is empty or saving fails.
      */
+    @Override
     public boolean execute(TaskList tasks, Ui ui, Storage storage) throws ChironException {
         if (desc.isEmpty()) {
             throw new ChironException("A todo with no description? Bold. Not helpful.");

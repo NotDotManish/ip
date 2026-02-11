@@ -42,7 +42,7 @@ public class MainWindow extends AnchorPane {
      */
     @FXML
     private void handleUserInput() {
-        Stringinput = userInput.getText();
+        String input = userInput.getText();
         String response = chiron.getResponse(input);
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),

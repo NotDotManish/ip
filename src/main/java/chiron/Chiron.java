@@ -22,7 +22,7 @@ public class Chiron {
      */
     public Chiron() {
         this.ui = new Ui();
-        this.storage = new Storage(DATA_DIR, DATA_FILE);
+        this.storage = new Storage(DATA_DIR + java.io.File.separator + DATA_FILE);
 
         ArrayList<Task> loadedTasks;
         try {
