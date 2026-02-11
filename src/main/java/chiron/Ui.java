@@ -46,30 +46,37 @@ public class Ui {
     }
 
     /**
+     * Displays a message to the user, wrapped in horizontal lines.
+     *
+     * @param messages The messages to display.
+     */
+    public void showToUser(String... messages) {
+        line();
+        for (String msg : messages) {
+            println(msg);
+        }
+        line();
+    }
+
+    /**
      * Displays the welcome message to the user.
      */
     public void showGreeting() {
-        line();
-        println(GREET_1);
-        println(GREET_2);
-        println(GREET_3);
-        line();
+        showToUser(GREET_1, GREET_2, GREET_3);
     }
 
     /**
      * Displays the exit message to the user.
      */
     public void showBye() {
-        line();
-        println(BYE);
-        line();
+        showToUser(BYE);
     }
 
     /**
      * Displays the help message with available commands.
      */
     public void showHelp() {
-        println(HELP);
+        showToUser(HELP);
     }
 
     /**
@@ -78,9 +85,7 @@ public class Ui {
      * @param message The error message to display.
      */
     public void showError(String message) {
-        line();
-        println("Chiron: " + message);
-        line();
+        showToUser("Chiron: " + message);
     }
 
     /**
@@ -109,11 +114,7 @@ public class Ui {
      * @param message The confirmation message.
      */
     public void showAdded(Task task, int size, String message) {
-        line();
-        println("Chiron: " + message);
-        println("  " + size + ". " + task);
-        println("Now you have " + size + " task(s).");
-        line();
+        showToUser("Chiron: " + message, "  " + size + ". " + task, "Now you have " + size + " task(s).");
     }
 
     /**
@@ -123,11 +124,8 @@ public class Ui {
      * @param size    The new total number of tasks.
      */
     public void showDeleted(Task removed, int size) {
-        line();
-        println("Chiron: Letting go can be a form of clarity.");
-        println("  " + removed);
-        println("Now you have " + size + " task(s).");
-        line();
+        showToUser("Chiron: Letting go can be a form of clarity.", "  " + removed,
+                "Now you have " + size + " task(s).");
     }
 
     /**
@@ -138,14 +136,9 @@ public class Ui {
      * @param isDone True if marked done, false if unmarked.
      */
     public void showMarked(Task task, int index, boolean isDone) {
-        line();
-        if (isDone) {
-            println("Chiron: Well done. Momentum is built like this.");
-        } else {
-            println("Chiron: Then it isn’t finished yet. That’s alright.");
-        }
-        println("  " + index + ". " + task);
-        line();
+        String msg = isDone ? "Chiron: Well done. Momentum is built like this."
+                : "Chiron: Then it isn’t finished yet. That’s alright.";
+        showToUser(msg, "  " + index + ". " + task);
     }
 
     /**
