@@ -40,21 +40,22 @@ public class Parser {
         }
 
         String[] parts = trimmed.split("\\s+", 2);
+        assert parts.length > 0 : "Parser token list should never be empty after splitting non-empty input";
         String word = parts[0].toLowerCase();
         String args = (parts.length < 2) ? "" : parts[1];
 
         return switch (word) {
-        case "bye" -> new ByeCommand();
-        case "list" -> new ListCommand();
-        case "todo" -> new TodoCommand(args);
-        case "deadline" -> new DeadlineCommand(args);
-        case "event" -> new EventCommand(args);
-        case "mark" -> new MarkCommand(args);
-        case "unmark" -> new UnmarkCommand(args);
-        case "delete" -> new DeleteCommand(args);
-        case "find" -> new FindCommand(args);
-        case "help" -> new HelpCommand();
-        default -> throw new ChironException("That path doesn’t make sense yet.");
+            case "bye" -> new ByeCommand();
+            case "list" -> new ListCommand();
+            case "todo" -> new TodoCommand(args);
+            case "deadline" -> new DeadlineCommand(args);
+            case "event" -> new EventCommand(args);
+            case "mark" -> new MarkCommand(args);
+            case "unmark" -> new UnmarkCommand(args);
+            case "delete" -> new DeleteCommand(args);
+            case "find" -> new FindCommand(args);
+            case "help" -> new HelpCommand();
+            default -> throw new ChironException("That path doesn’t make sense yet.");
         };
     }
 
@@ -126,7 +127,9 @@ public class Parser {
             throw new ChironException("Give me a task number.");
         }
         try {
-            return Integer.parseInt(s);
+            int index = Integer.parseInt(s);
+            assert index >= 1 : "Parsed zero-based index should practically correspond to a positive display number";
+            return index;
         } catch (NumberFormatException e) {
             throw new ChironException("That wasn’t a number. Precision matters here.");
         }
