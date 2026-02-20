@@ -23,8 +23,8 @@ public class MainWindow extends AnchorPane {
 
     private Chiron chiron;
 
-    private Image userImage = new Image(this.getClass().getResourceAsStream("/images/DaUser.png"));
-    private Image dishwasherImage = new Image(this.getClass().getResourceAsStream("/images/DaDuke.png"));
+    private Image userImage = new Image(this.getClass().getResourceAsStream("/images/percy.jpeg"));
+    private Image chironImage = new Image(this.getClass().getResourceAsStream("/images/chiron.jpeg"));
 
     @FXML
     public void initialize() {
@@ -46,7 +46,7 @@ public class MainWindow extends AnchorPane {
         String response = chiron.getResponse(input);
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
-                DialogBox.getChironDialog(response, dishwasherImage));
+                DialogBox.getChironDialog(response, chironImage));
         userInput.clear();
     }
 }

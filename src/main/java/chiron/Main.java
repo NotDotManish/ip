@@ -23,7 +23,9 @@ public class Main extends Application {
             Scene scene = new Scene(ap);
             stage.setScene(scene);
             stage.setTitle("Chiron");
-            stage.setResizable(false);
+            stage.setResizable(true);
+            stage.setMinHeight(600.0);
+            stage.setMinWidth(400.0);
 
             // Inject dependency
             fxmlLoader.<MainWindow>getController().setChiron(chiron);

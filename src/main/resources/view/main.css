@@ -1,0 +1,66 @@
+.main-window {
+    -fx-background-image: url("../images/camp.jpeg");
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+}
+
+.scroll-pane>.viewport {
+    -fx-background-color: transparent;
+}
+
+.dialog-container {
+    -fx-background-color: transparent;
+    -fx-spacing: 15px;
+    -fx-padding: 20px 10px 20px 10px;
+}
+
+.user-dialog-box {
+    -fx-alignment: top-right;
+}
+
+.user-dialog-box .dialog-label {
+    -fx-background-color: #d1e7dd;
+    -fx-background-radius: 15 0 15 15;
+    -fx-padding: 15px;
+    -fx-text-fill: #0f5132;
+    -fx-font-family: "Helvetica", "Arial", sans-serif;
+    -fx-font-size: 14px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
+}
+
+.chiron-dialog-box {
+    -fx-alignment: top-left;
+}
+
+.chiron-dialog-box .dialog-label {
+    -fx-background-color: #fff3cd;
+    -fx-background-radius: 0 15 15 15;
+    -fx-padding: 15px;
+    -fx-text-fill: #664d03;
+    -fx-font-family: "Helvetica", "Arial", sans-serif;
+    -fx-font-size: 14px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
+}
+
+#userInput {
+    -fx-background-image: url("../images/scroll1.jpg");
+    -fx-background-size: 100% 100%;
+    -fx-background-color: transparent;
+    -fx-padding: 5 20 5 20;
+    -fx-font-size: 14px;
+    -fx-text-fill: #3b2a1a;
+    -fx-font-weight: bold;
+}
+
+#sendButton {
+    -fx-background-color: #0d6efd;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 3, 0, 0, 2);
+}
