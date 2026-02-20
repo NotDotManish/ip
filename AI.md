@@ -1,26 +1,18 @@
-# AI usage in Chiron
+# AI Usage in Chiron
 
-Throughout the development of the Chiron chatbot, various AI technologies were leveraged to accelerate coding, guarantee codebase stability, troubleshoot bugs, and design UI elements. This document logs the usage of these tools as part of the `A-AiAssisted` increment.
+Throughout the development of the Chiron chatbot, I used AI tools (specifically Google's Gemini-based assistants like Antigravity) to act as a pair-programmer. While the core logic, application architecture, and primary design decisions were developed by me, AI was leveraged to speed up repetitive tasks, troubleshoot specific bugs, and refine UI aesthetics. This document logs the usage of these tools as part of the `A-AiAssisted` increment.
 
-## Code Generation & Issue Resolution
-**Tool used:** Antigravity (Powered by Google Deepmind)
+## 1. Code Quality & Linter Adherence
+**How AI helped:** I used AI to help me quickly track down and fix stubborn Checkstyle violations.
+**Details:** When the CI/CD pipeline failed due to hidden indentation issues in older legacy files like `Storage.java` and `Parser.java`, I used the AI assistant to parse the Checkstyle error logs and identify exactly which lines needed their spacing adjusted from 12 spaces to 8 spaces. This saved me a significant amount of manual formatting time.
 
-Antigravity was given access as an agent to traverse the local project directory and fulfill requirements across weeks 5 and 6, and it was used to accomplish the following tasks:
+## 2. GUI Upgrades & CSS Styling
+**How AI helped:** I used AI to help me write the CSS for my JavaFX application and troubleshoot layout constraints.
+**Details:** I designed the basic FXML layout and the camp-themed aesthetic I wanted (asymmetric chat bubbles, circular profile pictures, and a scrolling parchment background). I then prompted the AI to help me translate this design into standard JavaFX CSS (`main.css`). The AI provided the specific CSS rules to clip the `ImageView` into perfect circles and suggested using `AnchorPane` constraints to ensure the scroll pane resized correctly when the window was expanded.
 
-1. **Bug fixing and Linter adherence**: Checkstyle violations in legacy files like `Storage.java` and `Parser.java` were autonomously parsed, diagnosed, and corrected by Antigravity directly running terminal commands, replacing file contents, and re-running `./gradlew build` iteratively until the terminal output passed.
-2. **Refactoring**: Antigravity efficiently identified code that needed to be abstracted, helping extract the `Ui` class for a much cleaner architecture.
-3. **Complex Logic**: For the `A-MoreErrorHandling` increment, the tool was utilized to traverse `TaskList.java` and implement Java Stream API functions to prevent duplicate task registrations, and check Temporal access to prevent impossible event time pairings.
+## 3. Boilerplate & Documentation
+**How AI helped:** I used AI to help generate the initial draft of my GitHub-flavored Markdown document.
+**Details:** After I finished writing all the command logic, I provided the AI with a list of the features (e.g., `todo`, `event`, `deadline`, aliases like `t` and `m`) and asked it to format a clean, structured `README.md` file for the User Guide. I then reviewed and refined the generated documentation.
 
-## GUI Upgrades & Aesthetics
-**Tool used:** Antigravity & Image Generation
-
-The `A-BetterGui` framework and stylistic aesthetic transformations were conceptualized and refined alongside an AI Assistant.
-- **Micro-Animations & CSS:** Deepmind's agent correctly built out an asymmetric interaction view where User messages aligned left and Chiron responses mirrored to the right. Profile images were masked to perfect spheres using `Circle` clipping directly in `DialogBox.java` avoiding messy FXML constraints.
-- **Debugging JavaFX resizing issues:** AI assistance quickly solved layout clipping using `AnchorPane.setBottomAnchor` mapping when transitioning from a static JavaFX frame to a dynamic, resizable GUI.
-- **Asset Procurement:** An AI generated, tailored digital parchment texture `scroll1.jpg` used meticulously for the JavaFX text-input background, creating a high-fidelity Camp Half-Blood immersion. 
-
-## Documentation
-**Tool used:** Antigravity 
-Antigravity generated the `docs/README.md` file using proper strictly formatted GitHub Flavored Markdown (GFMD) including syntax examples and structured headers.
-
-By relying on agentic AI capabilities for repetitive logic debugging and structural UI implementations, the development trajectory could primarily center around app-architecture and software engineering fundamentals—an exceptionally productive pipeline!
+## Summary
+Using AI as a supplementary tool allowed me to focus my efforts on the software engineering principles, the core logic of the application, and the overall design system, while outsourcing tedious formatting tasks, CSS syntax lookups, and boilerplate generation to the assistant.
