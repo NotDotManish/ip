@@ -98,10 +98,7 @@ public class Ui {
         if (tasks.size() == 0) {
             println("Chiron: Your list is empty. Either you’re prepared - or you haven’t begun.");
         } else {
-            println("Chiron: Here’s what you owe yourself:");
-            for (int i = 0; i < tasks.size(); i++) {
-                println((i + 1) + ". " + tasks.get(i));
-            }
+            printTasks(tasks.asUnmodifiableList(), "Chiron: Here’s what you owe yourself:");
         }
         line();
     }
@@ -151,10 +148,7 @@ public class Ui {
         if (matches.isEmpty()) {
             println("Chiron: I found nothing. Perhaps it never existed.");
         } else {
-            println("Chiron: Here are the matching tasks in your list:");
-            for (int i = 0; i < matches.size(); i++) {
-                println((i + 1) + ". " + matches.get(i));
-            }
+            printTasks(matches, "Chiron: Here are the matching tasks in your list:");
         }
         line();
     }
@@ -164,5 +158,18 @@ public class Ui {
      */
     public void line() {
         println(LINE);
+    }
+
+    /**
+     * Prints a list of tasks with a header.
+     *
+     * @param list   The list of tasks to print.
+     * @param header The header message.
+     */
+    private void printTasks(java.util.List<Task> list, String header) {
+        println(header);
+        for (int i = 0; i < list.size(); i++) {
+            println((i + 1) + ". " + list.get(i));
+        }
     }
 }
