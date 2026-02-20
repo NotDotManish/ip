@@ -9,7 +9,7 @@
     -fx-control-inner-background: transparent;
 }
 
-.scroll-pane > .viewport {
+.scroll-pane>.viewport {
     -fx-background-color: transparent;
 }
 
@@ -30,7 +30,7 @@
     -fx-text-fill: #0f5132;
     -fx-font-family: "Helvetica", "Arial", sans-serif;
     -fx-font-size: 14px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
 }
 
 .chiron-dialog-box {
@@ -44,16 +44,17 @@
     -fx-text-fill: #664d03;
     -fx-font-family: "Helvetica", "Arial", sans-serif;
     -fx-font-size: 14px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
 }
 
 #userInput {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 20px;
-    -fx-border-radius: 20px;
-    -fx-border-color: #cccccc;
-    -fx-padding: 5 15 5 15;
+    -fx-background-image: url("../images/scroll.jpg");
+    -fx-background-size: 100% 100%;
+    -fx-background-color: transparent;
+    -fx-padding: 5 20 5 20;
     -fx-font-size: 14px;
+    -fx-text-fill: #3b2a1a;
+    -fx-font-weight: bold;
 }
 
 #sendButton {
@@ -61,5 +62,5 @@
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-background-radius: 20px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 2);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 3, 0, 0, 2);
 }
