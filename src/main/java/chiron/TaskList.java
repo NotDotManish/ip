@@ -51,7 +51,10 @@ public class TaskList {
      *
      * @param task The task to add.
      */
-    public void add(Task task) {
+    public void add(Task task) throws ChironException {
+        if (tasks.stream().anyMatch(t -> t.equals(task))) {
+            throw new ChironException("This task already exists. Focus on what’s new.");
+        }
         tasks.add(task);
     }
 

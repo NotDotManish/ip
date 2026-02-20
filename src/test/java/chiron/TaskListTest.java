@@ -13,7 +13,7 @@ public class TaskListTest {
      * Tests adding a task to the list.
      */
     @Test
-    public void add_task_success() {
+    public void add_task_success() throws ChironException {
         // Verify that adding a task increases the list size
         TaskList tasks = new TaskList();
         assertEquals(0, tasks.size());
@@ -26,7 +26,7 @@ public class TaskListTest {
      * Tests deleting a task from the list.
      */
     @Test
-    public void delete_task_success() {
+    public void delete_task_success() throws ChironException {
         // Verify that removing a task decreases list size and returns the correct task
         TaskList tasks = new TaskList();
         tasks.add(new Todo("task 1"));
@@ -42,7 +42,7 @@ public class TaskListTest {
      * Tests retrieving a task from the list.
      */
     @Test
-    public void get_task_success() {
+    public void get_task_success() throws ChironException {
         // Verify retrieving a task by index
         TaskList tasks = new TaskList();
         Task t = new Todo("test task");
