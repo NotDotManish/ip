@@ -44,17 +44,17 @@ public class Parser {
         String args = (parts.length < 2) ? "" : parts[1];
 
         return switch (word) {
-        case "bye" -> new ByeCommand();
-        case "list" -> new ListCommand();
-        case "todo" -> new TodoCommand(args);
-        case "deadline" -> new DeadlineCommand(args);
-        case "event" -> new EventCommand(args);
-        case "mark" -> new MarkCommand(args);
-        case "unmark" -> new UnmarkCommand(args);
-        case "delete" -> new DeleteCommand(args);
-        case "find" -> new FindCommand(args);
-        case "help" -> new HelpCommand();
-        default -> throw new ChironException("That path doesn’t make sense yet.");
+            case "bye", "b" -> new ByeCommand();
+            case "list", "ls" -> new ListCommand();
+            case "todo", "t" -> new TodoCommand(args);
+            case "deadline", "d" -> new DeadlineCommand(args);
+            case "event", "e" -> new EventCommand(args);
+            case "mark", "m" -> new MarkCommand(args);
+            case "unmark", "um" -> new UnmarkCommand(args);
+            case "delete", "rm" -> new DeleteCommand(args);
+            case "find", "f" -> new FindCommand(args);
+            case "help", "h" -> new HelpCommand();
+            default -> throw new ChironException("That path doesn’t make sense yet.");
         };
     }
 
