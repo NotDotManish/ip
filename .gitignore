@@ -19,3 +19,7 @@ data/
 # Text UI test files
 /text-ui-test/ACTUAL.TXT
 text-ui-test/EXPECTED-UNIX.TXT
+
+# Personal notes / context files
+context.md
+weekly_reqs.md
