@@ -58,6 +58,10 @@ public class EventCommand extends Command {
             throw new ChironException("I can only read dates as yyyy-mm-dd (optional time: HHmm).");
         }
 
+        if (from.value().isAfter(to.value()) || from.value().equals(to.value())) {
+            throw new ChironException("An event must end after it begins. Time moves forward.");
+        }
+
         Task t = new Event(desc, from.value(), from.hasTime(), to.value(), to.hasTime());
         tasks.add(t);
         storage.save(tasks);
