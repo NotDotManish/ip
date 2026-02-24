@@ -42,7 +42,7 @@ public class Parser {
         String[] parts = trimmed.split("\\s+", 2);
         assert parts.length > 0 : "Parser token list should never be empty after splitting non-empty input";
         String word = parts[0].toLowerCase();
-        String args = (parts.length < 2) ? "" : parts[1];
+        String args = parts.length > 1 ? parts[1] : "";
 
         return switch (word) {
             case "bye", "b" -> new ByeCommand();
