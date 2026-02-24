@@ -101,36 +101,36 @@ public class Storage {
 
         String type = parts[0].trim();
         boolean done = "1".equals(parts[1].trim());
-        String desc = parts[2].trim();
+        String description = parts[2].trim();
 
         Task t;
         switch (type) {
-        case "T":
-            t = new Todo(desc);
-            break;
-        case "D":
-            if (parts.length < 4) {
+            case "T":
+                t = new Todo(description);
+                break;
+            case "D":
+                if (parts.length < 4) {
+                    return null;
+                }
+                Parser.ParsedDateTime by = Parser.parseDateTime(parts[3].trim());
+                if (by == null) {
+                    return null;
+                }
+                t = new Deadline(description, by.value(), by.hasTime());
+                break;
+            case "E":
+                if (parts.length < 5) {
+                    return null;
+                }
+                Parser.ParsedDateTime from = Parser.parseDateTime(parts[3].trim());
+                Parser.ParsedDateTime to = Parser.parseDateTime(parts[4].trim());
+                if (from == null || to == null) {
+                    return null;
+                }
+                t = new Event(description, from.value(), from.hasTime(), to.value(), to.hasTime());
+                break;
+            default:
                 return null;
-            }
-            Parser.ParsedDateTime by = Parser.parseDateTime(parts[3].trim());
-            if (by == null) {
-                return null;
-            }
-            t = new Deadline(desc, by.value(), by.hasTime());
-            break;
-        case "E":
-            if (parts.length < 5) {
-                return null;
-            }
-            Parser.ParsedDateTime from = Parser.parseDateTime(parts[3].trim());
-            Parser.ParsedDateTime to = Parser.parseDateTime(parts[4].trim());
-            if (from == null || to == null) {
-                return null;
-            }
-            t = new Event(desc, from.value(), from.hasTime(), to.value(), to.hasTime());
-            break;
-        default:
-            return null;
         }
 
         t.setDone(done);
