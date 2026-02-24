@@ -48,7 +48,7 @@ public class Storage {
             }
             assert tasks != null : "Loaded tasks list should not be null";
         } catch (FileNotFoundException e) {
-            throw new ChironException("Storage file disappeared. Magic?");
+            throw new ChironException("Storage file could not be found.");
         }
 
         return tasks;
