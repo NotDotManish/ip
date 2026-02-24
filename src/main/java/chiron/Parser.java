@@ -45,17 +45,17 @@ public class Parser {
         String args = (parts.length < 2) ? "" : parts[1];
 
         return switch (word) {
-        case "bye", "b" -> new ByeCommand();
-        case "list", "ls" -> new ListCommand();
-        case "todo", "t" -> new TodoCommand(args);
-        case "deadline", "d" -> new DeadlineCommand(args);
-        case "event", "e" -> new EventCommand(args);
-        case "mark", "m" -> new MarkCommand(args);
-        case "unmark", "um" -> new UnmarkCommand(args);
-        case "delete", "rm" -> new DeleteCommand(args);
-        case "find", "f" -> new FindCommand(args);
-        case "help", "h" -> new HelpCommand();
-        default -> throw new ChironException("That path doesn’t make sense yet.");
+            case "bye", "b" -> new ByeCommand();
+            case "list", "ls" -> new ListCommand();
+            case "todo", "t" -> new TodoCommand(args);
+            case "deadline", "d" -> new DeadlineCommand(args);
+            case "event", "e" -> new EventCommand(args);
+            case "mark", "m" -> new MarkCommand(args);
+            case "unmark", "um" -> new UnmarkCommand(args);
+            case "delete", "rm" -> new DeleteCommand(args);
+            case "find", "f" -> new FindCommand(args);
+            case "help", "h" -> new HelpCommand();
+            default -> throw new ChironException("That path doesn’t make sense yet.");
         };
     }
 
@@ -124,7 +124,7 @@ public class Parser {
     public static int parseIndex(String arg) throws ChironException {
         String s = arg.trim();
         if (s.isEmpty()) {
-            throw new ChironException("Give me a task number.");
+            throw new ChironException("Please provide a valid task number.");
         }
         try {
             int index = Integer.parseInt(s);
