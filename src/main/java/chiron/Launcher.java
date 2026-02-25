@@ -7,6 +7,11 @@ import javafx.application.Application;
  */
 public class Launcher {
     public static void main(String[] args) {
-        Application.launch(Main.class, args);
+        try {
+            Application.launch(Main.class, args);
+        } catch (Throwable t) {
+            System.out.println("GUI could not be started in this environment. Falling back to CLI...");
+            new Chiron().run();
+        }
     }
 }
